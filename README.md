@@ -99,6 +99,8 @@ The frontend will run on `http://localhost:3001`
 
 Tracks when a user clicks on an affiliate link.
 
+<img width="1029" height="776" alt="image" src="https://github.com/user-attachments/assets/29136967-955b-46b4-a599-9dd58237bb07" />
+
 **Query Parameters:**
 
 - `affiliate_id` (required): The affiliate's unique identifier
@@ -129,6 +131,8 @@ curl "https://almmo-assignment-l6f4.vercel.app/click?affiliate_id=aff_123&campai
 **GET** `/postback`
 
 Tracks conversions when users complete desired actions.
+
+<img width="1030" height="776" alt="image" src="https://github.com/user-attachments/assets/c3a5a69c-20b4-4b02-84fb-2b798a2d8f7c" />
 
 **Query Parameters:**
 
