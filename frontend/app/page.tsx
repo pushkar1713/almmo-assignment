@@ -191,7 +191,7 @@ export default function Home() {
                 Use this URL format for tracking conversions:
               </p>
               <div className="bg-gray-100 p-4 rounded-lg font-mono text-sm break-all">
-                https://affiliate-system.com/postback?affiliate_id=
+                https:/https://almmo-assignment-l6f4.vercel.app/postback?affiliate_id=
                 {selectedAffiliate.id}&click_id={"{click_id}"}
                 &amount={"{amount}"}&currency={"{currency}"}
               </div>
