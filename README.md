@@ -271,4 +271,4 @@ The application is deployed on Vercel:
 
 - Frontend: Automatic deployment from main branch
 - Backend: Uses Vercel's serverless functions
-- Database: PostgreSQL hosted on Vercel Postgres
+- Database: PostgreSQL hosted on Neon Postgres
