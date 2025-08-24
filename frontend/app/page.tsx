@@ -14,17 +14,23 @@ import axios from "axios";
 import { Affiliate, Click, Conversion } from "@/types";
 
 const getAffiliates = async () => {
-  const response = await axios.get("http://localhost:3000/affiliates");
+  const response = await axios.get(
+    "https://almmo-assignment-l6f4.vercel.app/affiliates"
+  );
   return response.data.data;
 };
 
 const getClicksData = async () => {
-  const response = await axios.get("http://localhost:3000/clicks");
+  const response = await axios.get(
+    "https://almmo-assignment-l6f4.vercel.app/clicks"
+  );
   return response.data.data;
 };
 
 const getConversionsData = async () => {
-  const response = await axios.get("http://localhost:3000/conversions");
+  const response = await axios.get(
+    "https://almmo-assignment-l6f4.vercel.app/conversions"
+  );
   return response.data.data;
 };
 
