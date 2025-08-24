@@ -1,48 +1,70 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import axios from "axios";
+import { Affiliate, Click, Conversion } from "@/types";
 
-// Mock data
-const affiliates = [
-  { id: 1, name: "John Smith" },
-  { id: 2, name: "Sarah Johnson" },
-  { id: 3, name: "Mike Wilson" },
-]
+const getAffiliates = async () => {
+  const response = await axios.get("http://localhost:3000/affiliates");
+  return response.data.data;
+};
 
-const mockClicks = [
-  { campaign: "Summer Sale", clicks: 245 },
-  { campaign: "Black Friday", clicks: 189 },
-  { campaign: "New Year Promo", clicks: 156 },
-]
+const getClicksData = async () => {
+  const response = await axios.get("http://localhost:3000/clicks");
+  return response.data.data;
+};
 
-const mockConversions = [
-  { amount: 125.5, currency: "USD", timestamp: "2024-01-15 14:30:22" },
-  { amount: 89.99, currency: "USD", timestamp: "2024-01-15 12:15:45" },
-  { amount: 200.0, currency: "USD", timestamp: "2024-01-14 16:22:10" },
-  { amount: 75.25, currency: "USD", timestamp: "2024-01-14 09:45:33" },
-]
+const getConversionsData = async () => {
+  const response = await axios.get("http://localhost:3000/conversions");
+  return response.data.data;
+};
 
 export default function Home() {
-  const [selectedAffiliate, setSelectedAffiliate] = useState<{
-    id: number
-    name: string
-  } | null>(null)
-  const [currentView, setCurrentView] = useState<"dashboard" | "postback">("dashboard")
+  const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
+  const [clicksData, setClicksData] = useState<Click[]>([]);
+  const [conversionsData, setConversionsData] = useState<Conversion[]>([]);
+  const [selectedAffiliate, setSelectedAffiliate] = useState<Affiliate | null>(
+    null
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const [affiliatesData, clicks, conversions] = await Promise.all([
+        getAffiliates(),
+        getClicksData(),
+        getConversionsData(),
+      ]);
+      setAffiliates(affiliatesData);
+      setClicksData(clicks);
+      setConversionsData(conversions);
+    };
+    fetchData();
+  }, []);
+
+  const [currentView, setCurrentView] = useState<"dashboard" | "postback">(
+    "dashboard"
+  );
 
   const handleLogin = (affiliateId: string) => {
-    const affiliate = affiliates.find((a) => a.id.toString() === affiliateId)
+    const affiliate = affiliates.find((a) => a.id.toString() === affiliateId);
     if (affiliate) {
-      setSelectedAffiliate(affiliate)
+      setSelectedAffiliate(affiliate);
     }
-  }
+  };
 
   const handleLogout = () => {
-    setSelectedAffiliate(null)
-    setCurrentView("dashboard")
-  }
+    setSelectedAffiliate(null);
+    setCurrentView("dashboard");
+  };
 
   // Login simulation
   if (!selectedAffiliate) {
@@ -59,7 +81,10 @@ export default function Home() {
               </SelectTrigger>
               <SelectContent>
                 {affiliates.map((affiliate) => (
-                  <SelectItem key={affiliate.id} value={affiliate.id.toString()}>
+                  <SelectItem
+                    key={affiliate.id}
+                    value={affiliate.id.toString()}
+                  >
                     {affiliate.name}
                   </SelectItem>
                 ))}
@@ -68,14 +93,16 @@ export default function Home() {
           </CardContent>
         </Card>
       </main>
-    )
+    );
   }
 
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="border-b bg-white px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Affiliate Dashboard - {selectedAffiliate.name}</h1>
+          <h1 className="text-xl font-semibold">
+            Affiliate Dashboard - {selectedAffiliate.name}
+          </h1>
           <div className="flex items-center gap-4">
             <Button
               variant={currentView === "dashboard" ? "default" : "outline"}
@@ -106,10 +133,15 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {mockClicks.map((item, index) => (
-                    <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
-                      <span className="font-medium">{item.campaign}</span>
-                      <span className="text-gray-600">{item.clicks} clicks</span>
+                  {clicksData.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center py-2 border-b last:border-b-0"
+                    >
+                      <span className="font-medium">{item.campaignName}</span>
+                      <span className="text-gray-600">
+                        {item.clicks} clicks
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -123,14 +155,19 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {mockConversions.map((conversion, index) => (
-                    <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
+                  {conversionsData.map((conversion, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center py-2 border-b last:border-b-0"
+                    >
                       <div>
                         <span className="font-medium text-green-600">
                           {conversion.amount} {conversion.currency}
                         </span>
                       </div>
-                      <span className="text-gray-500 text-sm">{conversion.timestamp}</span>
+                      <span className="text-gray-500 text-sm">
+                        {new Date(conversion.createdAt).toLocaleString()}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -144,9 +181,12 @@ export default function Home() {
               <CardTitle>Your Postback URL</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 mb-4">Use this URL format for tracking conversions:</p>
+              <p className="text-gray-600 mb-4">
+                Use this URL format for tracking conversions:
+              </p>
               <div className="bg-gray-100 p-4 rounded-lg font-mono text-sm break-all">
-                https://affiliate-system.com/postback?affiliate_id={selectedAffiliate.id}&click_id={"{click_id}"}
+                https://affiliate-system.com/postback?affiliate_id=
+                {selectedAffiliate.id}&click_id={"{click_id}"}
                 &amount={"{amount}"}&currency={"{currency}"}
               </div>
             </CardContent>
@@ -154,5 +194,5 @@ export default function Home() {
         )}
       </div>
     </main>
-  )
+  );
 }

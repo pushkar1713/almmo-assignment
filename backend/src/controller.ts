@@ -7,7 +7,13 @@ const prisma = new PrismaClient();
 export class controller {
   static async clickTracking(req: Request, res: Response): Promise<void> {
     try {
-      const payload = clickTrackingSchema.safeParse(req.query);
+      const reqData = {
+        affiliateId: req.query.affiliate_id,
+        campaignId: req.query.campaign_id,
+        clickId: req.query.click_id,
+      };
+
+      const payload = clickTrackingSchema.safeParse(reqData);
 
       if (!payload.success) {
         console.log(payload.error);
@@ -33,7 +39,14 @@ export class controller {
 
   static async postBack(req: Request, res: Response): Promise<void> {
     try {
-      const payload = postBackSchema.safeParse(req.query);
+      const reqData = {
+        affiliateId: req.query.affiliate_id,
+        clickId: req.query.click_id,
+        amount: req.query.amount,
+        currency: req.query.currency,
+      };
+
+      const payload = postBackSchema.safeParse(reqData);
 
       if (!payload.success) {
         console.log(payload.error);
@@ -64,6 +77,68 @@ export class controller {
       res.status(200).json({
         status: "success",
         message: "Conversion tracked",
+      });
+      return;
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+  }
+
+  static async getConversions(req: Request, res: Response): Promise<void> {
+    try {
+      const conversions = await prisma.conversions.findMany({
+        select: {
+          id: true,
+          amount: true,
+          currency: true,
+          createdAt: true,
+        },
+      });
+      res.status(200).json({
+        status: "success",
+        data: conversions,
+      });
+      return;
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+  }
+
+  static async getClicks(req: Request, res: Response): Promise<void> {
+    try {
+      const clicks = await prisma.campaigns.findMany({
+        include: {
+          clicks: true,
+        },
+      });
+
+      const clicksData = clicks.map((campaign) => ({
+        campaignId: campaign.id,
+        campaignName: campaign.name,
+        clicks: campaign.clicks.length,
+      }));
+
+      res.status(200).json({
+        status: "success",
+        data: clicksData,
+      });
+      return;
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+  }
+  static async getAffiliates(req: Request, res: Response): Promise<void> {
+    try {
+      const affiliates = await prisma.affiliates.findMany();
+      res.status(200).json({
+        status: "success",
+        data: affiliates,
       });
       return;
     } catch (error) {

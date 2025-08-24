@@ -49,5 +49,5 @@ model conversions {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  click clicks @relation(fields: [clickId], references: [id])
+  click clicks @relation(fields: [clickId], references: [clickId])
 }
